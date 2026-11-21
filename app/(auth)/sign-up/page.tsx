@@ -1,40 +1,71 @@
-'use client'
+"use client"
 
+import * as React from "react"
 import Image from "next/image"
 import Link from "next/link"
-import { ArrowRight, Lock, Mail, User } from "lucide-react"
+import { useRouter } from "next/navigation"
+import { ArrowRight, Building2, Lock, Mail, ShieldCheck, User } from "lucide-react"
 
 import { AuthShell } from "@/components/auth-shell"
 import { GithubIcon } from "@/components/github-icon"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { signUp } from "@/lib/auth-client"
 import googleLogo from "@/app/images/logos/google.png"
-import { authClient } from "@/lib/auth-client"
+
+const accountTypes = [
+  { value: "sekkers", label: "Job seeker", icon: User },
+  { value: "recruiter", label: "Recruiter", icon: Building2 },
+  { value: "admin", label: "Admin", icon: ShieldCheck },
+] as const
 
 export default function SignUpPage() {
-     const onSubmit = async(e: React.SyntheticEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const formData = new FormData(e.currentTarget);
-    const data= Object.fromEntries(formData.entries())
-    console.log('form data:',data);
+  const router = useRouter()
+  const [error, setError] = React.useState<string | null>(null)
+  const [loading, setLoading] = React.useState(false)
 
-    const { data:resData, error } = await authClient.signUp.email({
-    name: data.name as string, // required, The name of the user.
-    email: data.email as string, // required, The email address of the user.
-    password: data.password as string, // required, The password of the user. It should be at least 8 characters long and max 128 by default.
-   
-    callbackURL: "/sign-in", // An optional URL to redirect to after the user signs up.
-});
-console.log(resData,error);
-   
-  };
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault()
+    setError(null)
+
+    const formData = new FormData(event.currentTarget)
+    const password = String(formData.get("password") ?? "")
+    const confirmPassword = String(formData.get("confirm-password") ?? "")
+
+    if (password !== confirmPassword) {
+      setError("Passwords do not match.")
+      return
+    }
+
+    setLoading(true)
+
+    const { error: authError } = await signUp.email({
+      name: String(formData.get("name") ?? ""),
+      email: String(formData.get("email") ?? ""),
+      password,
+      role: String(formData.get("role") ?? "sekkers") as
+        | "sekkers"
+        | "recruiter"
+        | "admin",
+    })
+
+    setLoading(false)
+
+    if (authError) {
+      setError(authError.message ?? "Unable to create account.")
+      return
+    }
+
+    router.push("/")
+  }
+
   return (
     <AuthShell
       mode="sign-up"
       title="Create your account"
       description="Join HireLoop and find your next opportunity."
     >
-      <form className="space-y-4" onSubmit={onSubmit}>
+      <form className="space-y-4" onSubmit={handleSubmit}>
         <div className="space-y-2">
           <label htmlFor="name" className="text-sm font-medium">
             Full name
@@ -48,6 +79,7 @@ console.log(resData,error);
               autoComplete="name"
               placeholder="Your full name"
               className="h-11 pl-9"
+              required
             />
           </div>
         </div>
@@ -65,9 +97,31 @@ console.log(resData,error);
               autoComplete="email"
               placeholder="you@example.com"
               className="h-11 pl-9"
+              required
             />
           </div>
         </div>
+
+        <fieldset className="space-y-2">
+          <legend className="text-sm font-medium">Account type</legend>
+          <div className="grid gap-2 sm:grid-cols-3">
+            {accountTypes.map(({ value, label, icon: Icon }) => (
+              <label key={value} className="relative cursor-pointer">
+                <input
+                  type="radio"
+                  name="role"
+                  value={value}
+                  defaultChecked={value === "sekkers"}
+                  className="peer sr-only"
+                />
+                <span className="flex h-full flex-col items-center justify-center gap-1.5 rounded-lg border border-border/70 bg-background/50 px-2 py-3 text-center text-xs text-muted-foreground transition-colors peer-checked:border-primary peer-checked:bg-primary/10 peer-checked:text-foreground peer-focus-visible:ring-2 peer-focus-visible:ring-ring/50">
+                  <Icon className="size-4" />
+                  {label}
+                </span>
+              </label>
+            ))}
+          </div>
+        </fieldset>
 
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-2">
@@ -83,6 +137,7 @@ console.log(resData,error);
                 autoComplete="new-password"
                 placeholder="Create password"
                 className="h-11 pl-9"
+                required
               />
             </div>
           </div>
@@ -100,6 +155,7 @@ console.log(resData,error);
                 autoComplete="new-password"
                 placeholder="Repeat password"
                 className="h-11 pl-9"
+                required
               />
             </div>
           </div>
@@ -111,6 +167,7 @@ console.log(resData,error);
             name="terms"
             type="checkbox"
             className="mt-0.5 size-4 shrink-0 rounded border-border bg-background accent-primary"
+            required
           />
           <span>
             I agree to the{" "}
@@ -131,8 +188,17 @@ console.log(resData,error);
           </span>
         </label>
 
-        <Button type="submit" className="h-11 w-full text-sm">
-          Create account
+        {error && (
+          <p
+            role="alert"
+            className="rounded-lg border border-destructive/40 bg-destructive/10 px-3 py-2 text-sm text-destructive"
+          >
+            {error}
+          </p>
+        )}
+
+        <Button type="submit" className="h-11 w-full text-sm" disabled={loading}>
+          {loading ? "Creating account..." : "Create account"}
           <ArrowRight className="size-4" />
         </Button>
       </form>

@@ -9,6 +9,7 @@ import { ArrowUpRight, Menu, X } from "lucide-react"
 import { Button, buttonVariants } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import logo from "@/app/images/logo.png"
+import { authClient } from "@/lib/auth-client"
 
 const navigation = [
   { label: "Home", href: "/" },
@@ -18,6 +19,8 @@ const navigation = [
 ]
 
 export function Navbar() {
+
+  const {data:session } =  authClient.useSession();
   const [open, setOpen] = React.useState(false)
   const pathname = usePathname()
 
@@ -62,7 +65,8 @@ export function Navbar() {
           })}
         </nav>
 
-        <div className="hidden items-center gap-2 md:flex">
+
+{session?.user ?<><h1>{session?.user?.name}</h1></>:<div className="hidden items-center gap-2 md:flex">
           <Link
             href="/sign-in"
             className={buttonVariants({ variant: "ghost", size: "sm" })}
@@ -70,13 +74,13 @@ export function Navbar() {
             Sign in
           </Link>
           <Link
-            href="/dashboard/recruiter/jobs/new"
+            href="/sign-up"
             className={buttonVariants({ size: "sm" })}
           >
-            Post a job
-            <ArrowUpRight className="size-3.5" />
+            Get Started
           </Link>
-        </div>
+        </div>}
+        
 
         <Button
           type="button"
@@ -124,11 +128,10 @@ export function Navbar() {
               Sign in
             </Link>
             <Link
-              href="/dashboard/recruiter/jobs/new"
+              href="/sign-up"
               className={buttonVariants({ size: "default" })}
             >
-              Post a job
-              <ArrowUpRight className="size-4" />
+              Get Started
             </Link>
           </div>
         </div>
