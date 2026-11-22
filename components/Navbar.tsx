@@ -4,26 +4,30 @@ import * as React from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { ArrowUpRight, Menu, X } from "lucide-react"
+import {  Menu, X } from "lucide-react"
 
 import { Button, buttonVariants } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import logo from "@/app/images/logo.png"
 import { authClient } from "@/lib/auth-client"
 
-const navigation = [
-  { label: "Home", href: "/" },
-  { label: "Browse Jobs", href: "/jobs" },
-  { label: "Companies", href: "/companies" },
-  { label: "Pricing", href: "/pricing" },
-]
+
 
 export function Navbar() {
 
   const {data:session } =  authClient.useSession();
   const [open, setOpen] = React.useState(false)
   const pathname = usePathname()
-
+  const handleSignout=async()=>{
+       await authClient.signOut();
+  }
+const navigation = [
+  { label: "Home", href: "/" },
+  { label: "Browse Jobs", href: "/jobs" },
+  { label: "Companies", href: "/companies" },
+  { label: "Pricing", href: "/pricing" },
+  { label: "Dashboard", href: `/dashboard/${session?.user?.role}` },
+]
   return (
     <header className="sticky top-0 z-50 w-full bg-[#222222]">
       <div className="mx-auto flex h-16 w-full max-w-7xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
@@ -42,7 +46,7 @@ export function Navbar() {
 
         <nav
           aria-label="Main navigation"
-          className="hidden items-center gap-1 md:flex"
+          className="hidden items-center gap-1 lg:flex"
         >
           {navigation.map((item) => {
             const active = pathname === item.href
@@ -66,7 +70,7 @@ export function Navbar() {
         </nav>
 
 
-{session?.user ?<><h1>{session?.user?.name}</h1></>:<div className="hidden items-center gap-2 md:flex">
+{session?.user ?<div className="flex min-w-0 items-center gap-4"><h1 className="truncate text-sm font-medium">Welcome , {session?.user?.name}</h1><Button className="shrink-0" onClick={handleSignout}>Sign out </Button></div>:<div className="hidden items-center gap-2 lg:flex">
           <Link
             href="/sign-in"
             className={buttonVariants({ variant: "ghost", size: "sm" })}
@@ -86,7 +90,7 @@ export function Navbar() {
           type="button"
           variant="ghost"
           size="icon"
-          className="md:hidden"
+          className="lg:hidden"
           aria-label={open ? "Close menu" : "Open menu"}
           aria-expanded={open}
           aria-controls="mobile-navigation"
@@ -99,7 +103,7 @@ export function Navbar() {
       {open && (
         <div
           id="mobile-navigation"
-          className="border-t border-border/70 bg-background px-4 pb-5 pt-2 sm:px-6 md:hidden"
+          className="border-t border-border/70 bg-background px-4 pb-5 pt-2 sm:px-6 lg:hidden"
         >
           <nav aria-label="Mobile navigation" className="flex flex-col gap-1">
             {navigation.map((item) => {

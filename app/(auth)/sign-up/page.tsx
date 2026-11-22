@@ -14,7 +14,7 @@ import { signUp } from "@/lib/auth-client"
 import googleLogo from "@/app/images/logos/google.png"
 
 const accountTypes = [
-  { value: "sekkers", label: "Job seeker", icon: User },
+  { value: "seeker", label: "Job seeker", icon: User },
   { value: "recruiter", label: "Recruiter", icon: Building2 },
   { value: "admin", label: "Admin", icon: ShieldCheck },
 ] as const
@@ -43,8 +43,8 @@ export default function SignUpPage() {
       name: String(formData.get("name") ?? ""),
       email: String(formData.get("email") ?? ""),
       password,
-      role: String(formData.get("role") ?? "sekkers") as
-        | "sekkers"
+      role: String(formData.get("role") ?? "seeker") as
+        | "seeker"
         | "recruiter"
         | "admin",
     })
@@ -111,7 +111,7 @@ export default function SignUpPage() {
                   type="radio"
                   name="role"
                   value={value}
-                  defaultChecked={value === "sekkers"}
+                  defaultChecked={value === "seeker"}
                   className="peer sr-only"
                 />
                 <span className="flex h-full flex-col items-center justify-center gap-1.5 rounded-lg border border-border/70 bg-background/50 px-2 py-3 text-center text-xs text-muted-foreground transition-colors peer-checked:border-primary peer-checked:bg-primary/10 peer-checked:text-foreground peer-focus-visible:ring-2 peer-focus-visible:ring-ring/50">

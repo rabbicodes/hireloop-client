@@ -6,15 +6,15 @@ import {
   Building2,
   MapPin,
   Search,
-  Sparkles,
+  
   Users,
   Award,
 } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import ctaBg from "@/app/images/cta-bg.png"
 import globe from "@/app/images/globe.png"
+import banner from '@/app/images/cta-bg.png'
 
 const trending = ["Product Designer", "AI Engineering", "Dev-ops Engineer"]
 
@@ -28,7 +28,11 @@ const stats = [
 export function HeroSection() {
   return (
     <section className="relative isolate overflow-hidden bg-background">
-     <div className="mx-auto h-220 w-full">
+      <div className="mt-9">
+  <Image src={banner} alt="banner"/>
+</div>
+    <div className="relative bottom-222">
+       <div className="mx-auto h-220 w-full">
   <Image
     src={globe}
     alt="HireLoop connecting job seekers with companies worldwide"
@@ -36,10 +40,11 @@ export function HeroSection() {
     className="mx-auto h-full w-full object-cover object-center drop-shadow-[0_0_60px_rgba(92,83,254,0.35)]"
   />
 </div>
+
      
-       <div className="mx-auto relative bottom-235 w-full max-w-5xl px-4 pb-16 pt-14  text-center sm:px-6 sm:pt-20 lg:pt-24">
+       <div className="mx-auto relative bottom-230 w-full max-w-5xl px-4 pb-16 pt-14  text-center sm:px-6 sm:pt-20 lg:pt-24">
         <div>
-          <hr className="w-80 font-extrabold  text-gray-400  relative top-4 mx-auto"/>
+          <hr className="w-80 text-gray-500 border-t-3   relative top-4 mx-auto"/>
         </div>
         <div className="inline-flex items-center gap-2 rounded-full border border-border/70 bg-card/60 px-4 py-1.5 text-[11px] font-medium tracking-wide text-muted-foreground backdrop-blur sm:text-xs">
           <BriefcaseBusiness className="size-3.5  text-amber-500" />
@@ -114,7 +119,7 @@ export function HeroSection() {
     {stats.map(({ icon: Icon, value, label }) => (
       <div
         key={label}
-        className="flex h-36 flex-col justify-between rounded-xl border border-white/10 bg-gradient-to-b from-black to-[#171717] p-4 text-left shadow-lg"
+        className="flex h-36 flex-col justify-between rounded-xl border border-white/10 bg-linear-to-b from-black to-[#171717] p-4 text-left shadow-lg"
       >
         <div className="flex size-8 items-center justify-center text-white/80">
           <Icon className="size-4" />
@@ -133,6 +138,7 @@ export function HeroSection() {
     ))}
   </div>
 </div>
+    </div>
     </section>
   )
 }
