@@ -73,7 +73,15 @@ export function DashboardSidebar() {
   const pathname = usePathname()
   const {data:session}=useSession()
 
-  const role = (session?.user?.role ?? "seeker") as RoleKey
+  const pathRole: RoleKey | null = pathname.startsWith("/dashboard/recruiter")
+    ? "recruiter"
+    : pathname.startsWith("/dashboard/admin")
+      ? "admin"
+      : pathname.startsWith("/dashboard/seeker")
+        ? "seeker"
+        : null
+
+  const role = (session?.user?.role ?? pathRole ?? "seeker") as RoleKey
 
   return (
     <Sidebar collapsible="icon">
